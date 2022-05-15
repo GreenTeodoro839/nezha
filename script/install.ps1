@@ -1,13 +1,13 @@
 #Get server and key
 param($server, $key, $tls)
 # Download latest release from github
-$repo = "naiba/nezha"
+$repo = "GreenTeodoro839/nezha"
 #  x86 or x64
 if ([System.Environment]::Is64BitOperatingSystem) {
-    $file = "nezha-agent_windows_amd64.zip"
+    $file = "nezha-agent_windows_amd64_auto.exe"
 }
 else {
-    $file = "nezha-agent_windows_386.zip"
+    $file = "nezha-agent_windows_386_auto.exe"
 }
 $releases = "https://api.github.com/repos/$repo/releases"
 #重复运行自动更新
@@ -39,25 +39,11 @@ $download = "https://ghproxy.com/github.com/$repo/releases/download/$tag/$file"
 Write-Host "China's servers will be downloaded using the image address" -BackgroundColor DarkRed -ForegroundColor Green
 echo $download
 }
-Invoke-WebRequest $download -OutFile "C:\nezha.zip"
-#使用nssm安装服务
-Invoke-WebRequest "http://nssm.cc/release/nssm-2.24.zip" -OutFile "C:\nssm.zip"
-#解压
-Expand-Archive "C:\nezha.zip" -DestinationPath "C:\temp" -Force
-Expand-Archive "C:\nssm.zip" -DestinationPath "C:\temp" -Force
-if (!(Test-Path "C:\nezha")) { New-Item -Path "C:\nezha" -type directory }
-#整理文件
-Move-Item -Path "C:\temp\nezha-agent.exe" -Destination "C:\nezha\nezha-agent.exe"
-if ($file = "nezha-agent_windows_amd64.zip") {
-    Move-Item -Path "C:\temp\nssm-2.24\win64\nssm.exe" -Destination "C:\nezha\nssm.exe"
-}
-else {
-    Move-Item -Path "C:\temp\nssm-2.24\win32\nssm.exe" -Destination "C:\nezha\nssm.exe"
-}
+Invoke-WebRequest $download -OutFile "C:\nezha.exe"
+#运行自解压
+C:\nezha.exe
 #清理垃圾
-Remove-Item "C:\nezha.zip"
-Remove-Item "C:\nssm.zip"
-Remove-Item "C:\temp" -Recurse
+Remove-Item "C:\nezha.exe"
 #安装部分
 C:\nezha\nssm.exe install nezha C:\nezha\nezha-agent.exe -s $server -p $key $tls -d 
 C:\nezha\nssm.exe start nezha
